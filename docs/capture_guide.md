@@ -85,8 +85,8 @@ One image per object: a hand touches or holds the object on the table (rest of t
 | Session | Lighting | Surface | Role |
 |---|---|---|---|
 | s01 (done) | desk lamp | desk + black mouse pad | train |
-| s02 | ceiling light only (desk lamp off) | desk + black mouse pad | train |
-| s03 | ceiling light | white sheet of paper (mouse pad removed) | train |
-| s04 | bedside lamp | dark cloth | train |
-| s05 | ceiling light + lamp | messy desk | val |
+| s02 | desk lamp moved to the side (or aimed at the wall), ceiling off | desk + black mouse pad | train |
+| s03 | desk lamp above, as in s01 | white sheet of paper (mouse pad removed) | train |
+| s04 | ceiling light + phone flashlight placed at a distance | dark cloth | train |
+| s05 | ceiling light + desk lamp | messy desk | val |
 | s06 | screen light only | bed cover | test (keep this setup secret until the end) |
