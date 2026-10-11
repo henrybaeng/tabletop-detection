@@ -8,3 +8,7 @@ runs/
 # Raw images stay local until the dataset is audited; processed splits are tracked via data.yaml + labels
 data/raw/*
 !data/raw/.gitkeep
+
+# Roboflow exports (re-creatable); final merged dataset will be handled separately
+data/*.zip
+data/_export*/
