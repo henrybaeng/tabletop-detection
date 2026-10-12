@@ -89,4 +89,4 @@ One image per object: a hand touches or holds the object on the table (rest of t
 | s03 | desk lamp above, as in s01 | white sheet of paper (mouse pad removed) | train |
 | s04 | ceiling light + phone flashlight placed at a distance | dark cloth | train |
 | s05 | ceiling light + desk lamp | messy desk | val |
-| s06 | screen light only | bed cover | test (keep this setup secret until the end) |
+| s06 | living-room light | white marble table (glossy, wall + wooden chair behind) | test (never seen: shoot last, do not tune on it) |
