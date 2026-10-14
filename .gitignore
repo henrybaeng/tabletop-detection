@@ -1,15 +1,15 @@
-.venv/
-__pycache__/
+
+!data/raw/.gitkeep
+# Raw images stay local until the dataset is audited; processed splits are tracked via data.yaml + labels
+# Roboflow exports (re-creatable); final merged dataset will be handled separately
+*.pt
 *.pyc
 .DS_Store
-runs/
-*.pt
 .ipynb_checkpoints/
-# Raw images stay local until the dataset is audited; processed splits are tracked via data.yaml + labels
-data/raw/*
-!data/raw/.gitkeep
-
-# Roboflow exports (re-creatable); final merged dataset will be handled separately
+.venv/
+__pycache__/
 data/*.zip
 data/_export*/
 data/dataset/
+data/raw/*
+runs/
