@@ -13,3 +13,4 @@ data/_export*/
 data/dataset/
 data/raw/*
 runs/
+data/_coco_baseline/
