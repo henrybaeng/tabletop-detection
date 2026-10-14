@@ -12,3 +12,4 @@ data/raw/*
 # Roboflow exports (re-creatable); final merged dataset will be handled separately
 data/*.zip
 data/_export*/
+data/dataset/
