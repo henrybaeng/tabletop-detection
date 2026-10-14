@@ -31,3 +31,19 @@ The 4 other classes (pen, usb_key, charger, airpod) are absent from COCO: a COCO
 |---|---|---|
 | fork | 0.571 -> 0.877 | 0.427 -> 0.720 |
 | spoon | 0.730 -> 0.828 | 0.599 -> 0.743 |
+
+## Controlled experiments on Kaggle (Tesla T4), 6 variants x 3 seeds, evaluated on val (s05)
+Raw data: `results/kaggle_all_runs.csv`, `results/kaggle_summary_mean_std.csv`. Notebook: `notebooks/kaggle_experiments.ipynb`.
+Mean +/- std over seeds 0, 1, 2. Each variant changes one factor relative to the baseline (except scratch, see note).
+
+| variant | mAP50 | mAP50-95 | minutes/run | note |
+|---|---|---|---|---|
+| baseline_yolo11n (COCO init, 30 ep, 640 px) | 0.940 +/- 0.010 | 0.815 +/- 0.002 | 1.9 | reproduces the Mac run (0.927 / 0.805) |
+| scratch_yolo11n (no pretrained weights, 100 ep) | 0.632 +/- 0.024 | 0.407 +/- 0.028 | 5.3 | given 100 epochs so random init is not handicapped |
+| aug_strong (hsv_s .9, hsv_v .6, rot 10 deg, translate .2, mixup .1) | 0.906 +/- 0.014 | 0.657 +/- 0.004 | 1.6 | worse, mostly on mAP50-95 |
+| yolo11s (bigger model) | 0.946 +/- 0.005 | 0.835 +/- 0.007 | 2.5 | +2.0 pt mAP50-95, consistent over seeds |
+| epochs60 | 0.933 +/- 0.003 | 0.823 +/- 0.001 | 3.3 | small gain, converged |
+| imgsz960 | 0.934 +/- 0.010 | 0.821 +/- 0.013 | 3.2 | within noise |
+
+Per-class AP50-95 (mean of 3 seeds): fork, pen, spoon stay around 0.76-0.82 for every pretrained variant; airpod ~0.94, usb_key ~0.82-0.86.
+Caveat: the best epoch of every run is picked on val, so all val numbers are slightly optimistic. The test split (s06) has not been used.
