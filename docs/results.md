@@ -47,3 +47,16 @@ Mean +/- std over seeds 0, 1, 2. Each variant changes one factor relative to the
 
 Per-class AP50-95 (mean of 3 seeds): fork, pen, spoon stay around 0.76-0.82 for every pretrained variant; airpod ~0.94, usb_key ~0.82-0.86.
 Caveat: the best epoch of every run is picked on val, so all val numbers are slightly optimistic. The test split (s06) has not been used.
+
+## Inference speed on the development Mac (Apple M1, 8 GB RAM), 640x360 frames, imgsz 640, batch 1
+`scripts/benchmark_fps.py`: preprocessing + network + NMS on real val frames; webcam capture and drawing are not included.
+Machine was not idle (other apps open); two MPS runs shown to give the spread. torch used 1 CPU thread (CPU numbers are pessimistic).
+
+| model | device | FPS | median latency | breakdown (pre + net + post) |
+|---|---|---|---|---|
+| YOLO11n | MPS (GPU) | 52-69 | 14-18 ms | ~1 + 11-15 + ~3 ms |
+| YOLO11s | MPS (GPU) | 26-28 | 36 ms | ~1 + 11-12 + ~24 ms (NMS dominates, not investigated) |
+| YOLO11n | CPU | 20 | 46 ms | |
+| YOLO11s | CPU | 11 | 90 ms | |
+
+Trade-off: YOLO11s gains ~2 points of mAP50-95 on val but runs at roughly half the speed; with webcam capture and drawing added, it would sit around 20 FPS.
