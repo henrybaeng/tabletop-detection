@@ -30,7 +30,7 @@ A robot that picks objects from a table first needs a detector that works on *it
 | val (s05) | 80 | 34 | 36 | 33 | 35 | 37 | 37 |
 | test (s06) | 80 | 36 | 37 | 36 | 37 | 32 | 35 |
 
-Each session follows the same shot list (empty table, single objects, pairs, groups of 3-4, all six objects with partial overlaps, a hand touching an object) - see [`docs/capture_guide.md`](docs/capture_guide.md). Annotation rules (bounding boxes drawn in Roboflow, e.g. `charger` = the power block only, not the cable; objects more than 70% hidden are not labelled) are in [`docs/annotation_rules.md`](docs/annotation_rules.md).
+Each session follows the same shot list (empty table, single objects, pairs, groups of 3-4, all six objects with partial overlaps, a hand touching an object). The full list is in [`docs/capture_guide.md`](docs/capture_guide.md). Annotation rules (bounding boxes drawn in Roboflow, e.g. `charger` = the power block only, not the cable; objects more than 70% hidden are not labelled) are in [`docs/annotation_rules.md`](docs/annotation_rules.md).
 
 **Why split by session and not at random:** frames of one session are near-duplicates. Roboflow's default random split would put almost identical images in train and test and inflate every metric. [`scripts/make_splits.py`](scripts/make_splits.py) rebuilds the split from the session prefix of each file name. The label audit ([`scripts/audit_labels.py`](scripts/audit_labels.py)) found no invalid or missing boxes.
 

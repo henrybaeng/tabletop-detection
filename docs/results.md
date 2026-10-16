@@ -4,7 +4,7 @@ Split by session: train = s01-s04 (319 img), val = s05 (80 img), test = s06 (80 
 All numbers below are on **val** unless stated. Best-epoch selection also used val, so val numbers are slightly optimistic;
 the unbiased number will be the single final evaluation on test.
 
-## Run 1 - YOLO11n fine-tuned from COCO weights (30 epochs, imgsz 640, batch 16, seed 0)
+## Run 1: YOLO11n fine-tuned from COCO weights (30 epochs, imgsz 640, batch 16, seed 0)
 | class | P | R | AP50 | AP50-95 |
 |---|---|---|---|---|
 | airpod | 0.965 | 1.000 | 0.994 | 0.956 |
@@ -18,7 +18,7 @@ the unbiased number will be the single final evaluation on test.
 Error analysis (conf >= 0.25, IoU >= 0.5): 28 false `fork` detections, mostly the nail clipper that is present in every
 s05 image but never in train; 7 spoons predicted as fork and 7 missed; pen: 3 missed, 7 false positives.
 
-## Baseline 1 - COCO-pretrained YOLO11n, no fine-tuning (only fork/spoon exist in COCO)
+## Baseline 1: COCO-pretrained YOLO11n, no fine-tuning (only fork/spoon exist in COCO)
 | class | P | R | AP50 | AP50-95 |
 |---|---|---|---|---|
 | fork | 0.871 | 0.411 | 0.571 | 0.427 |
