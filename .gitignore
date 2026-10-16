@@ -17,3 +17,4 @@ data/_coco_baseline/
 kaggle/*.zip
 kaggle/results/
 kaggle/results_aug/
+!weights/*.pt
