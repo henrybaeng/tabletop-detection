@@ -1,6 +1,7 @@
 """Real-time tabletop object detection from the webcam (or on a folder of images).
 
 Webcam:  python scripts/demo.py                    (add --camera N if your iPhone is camera 0, see capture.py --list)
+Video:   python scripts/demo.py --video my_clip.mp4 --save demo_out.mp4          (annotated copy of a recorded clip)
 Images:  python scripts/demo.py --images data/dataset/val/images --out screenshots/val_demo
 
 Keys (webcam window):  q quit | m switch model (YOLO11n <-> YOLO11s) | + / - confidence threshold | s save screenshot
@@ -23,6 +24,9 @@ parser.add_argument("--model", default="yolo11n", choices=list(MODELS))
 parser.add_argument("--conf", type=float, default=0.5, help="confidence threshold (0.5 hides most low-score false positives)")
 parser.add_argument("--camera", type=int, default=0)
 parser.add_argument("--imgsz", type=int, default=640)
+parser.add_argument("--video", help="run on a recorded video file instead of the webcam")
+parser.add_argument("--save", help="write the annotated video to this .mp4 path (webcam or --video)")
+parser.add_argument("--no-display", action="store_true", help="do not open a window (useful with --video --save)")
 parser.add_argument("--images", help="annotate every .jpg of this folder instead of using the webcam")
 parser.add_argument("--out", default="screenshots/demo", help="output folder for --images")
 parser.add_argument("--limit", type=int, default=12, help="max images with --images")
@@ -68,9 +72,13 @@ if args.images:  # batch mode, no window: used for tests and README figures
     print(f"saved annotated images to {out}")
     raise SystemExit
 
-cap = cv2.VideoCapture(args.camera)
+cap = cv2.VideoCapture(args.video if args.video else args.camera)
 if not cap.isOpened():
-    raise SystemExit("Cannot open the camera. Check macOS Settings > Privacy > Camera, or try --camera 1.")
+    raise SystemExit(f"Cannot open {args.video}." if args.video else
+                     "Cannot open the camera. Check macOS Settings > Privacy > Camera, or try --camera 1.")
+src_fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
+writer = None
+n_frames = 0
 
 fps, last = 0.0, time.perf_counter()
 shots = Path("screenshots")
@@ -84,6 +92,15 @@ while True:
     fps = 0.9 * fps + 0.1 / max(now - last, 1e-6) if fps else 1 / max(now - last, 1e-6)
     last = now
     view = draw(frame.copy(), result, f"{model_name} | {fps:4.1f} FPS | conf>={conf:.2f} | q quit, m model, +/- conf, s save")
+    if args.save:
+        if writer is None:
+            h, w = view.shape[:2]
+            Path(args.save).parent.mkdir(parents=True, exist_ok=True)
+            writer = cv2.VideoWriter(args.save, cv2.VideoWriter_fourcc(*"mp4v"), src_fps, (w, h))
+        writer.write(view)
+    n_frames += 1
+    if args.no_display:
+        continue
     cv2.imshow("Tabletop detection", view)
     key = cv2.waitKey(1) & 0xFF
     if key == ord("q"):
@@ -100,4 +117,7 @@ while True:
         cv2.imwrite(str(shots / f"demo_{int(time.time())}.jpg"), view)
 
 cap.release()
+if writer is not None:
+    writer.release()
+    print(f"wrote {n_frames} annotated frames to {args.save}")
 cv2.destroyAllWindows()

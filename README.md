@@ -114,7 +114,9 @@ python scripts/demo.py --model yolo11s
 python scripts/demo.py --camera 1       # if an iPhone is picked up as camera 0 (Continuity Camera)
 ```
 
-Keys: `q` quit, `m` switch model, `+`/`-` confidence threshold, `s` save a screenshot. To annotate a folder of images instead: `python scripts/demo.py --images <folder> --out screenshots/demo`.
+Keys: `q` quit, `m` switch model, `+`/`-` confidence threshold, `s` save a screenshot.
+
+To run on a recorded clip and write an annotated copy: `python scripts/demo.py --video clip.mp4 --save annotated.mp4`. To annotate a folder of images: `python scripts/demo.py --images <folder> --out screenshots/demo`.
 
 ![demo](screenshots/val_demo/s05_021.jpg)
 *Demo output on a validation image (confidence ≥ 0.5).*
