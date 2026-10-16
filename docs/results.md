@@ -60,3 +60,36 @@ Machine was not idle (other apps open); two MPS runs shown to give the spread. t
 | YOLO11s | CPU | 11 | 90 ms | |
 
 Trade-off: YOLO11s gains ~2 points of mAP50-95 on val but runs at roughly half the speed; with webcam capture and drawing added, it would sit around 20 FPS.
+
+## Augmentation ablation (Kaggle, YOLO11n, 3 seeds, val)
+Raw: `results/kaggle_aug_all_runs.csv`. Baseline was re-run in the same notebook: identical numbers (runs are reproducible).
+| variant | mAP50 | mAP50-95 |
+|---|---|---|
+| baseline | 0.940 +/- 0.010 | 0.815 +/- 0.002 |
+| aug_color (hsv_s .9, hsv_v .6) | 0.938 +/- 0.011 | 0.820 +/- 0.017 (noise) |
+| aug_rot10 (rotation 10 deg only) | 0.898 +/- 0.018 | 0.691 +/- 0.011 |
+Rotation alone costs ~12 points of mAP50-95 and explains most of the drop of `aug_strong`. Likely cause (not directly verified):
+axis-aligned boxes around a rotated object are looser. Extra colour jitter does not help. No extra augmentation is kept.
+
+## FINAL evaluation on the test split (s06, 80 images, marble table, never used for any decision)
+Evaluated once, with the two candidates fixed beforehand: seed-0 weights of YOLO11n and YOLO11s (same settings as the baseline run). Single seed per model.
+| model | P | R | mAP50 | mAP50-95 |
+|---|---|---|---|---|
+| YOLO11n (fine-tuned) | 0.974 | 0.975 | 0.981 | 0.854 |
+| YOLO11s (fine-tuned) | 0.979 | 0.973 | 0.982 | 0.869 |
+
+Per-class AP50-95: airpod .907/.921, charger .812/.841, fork .871/.831, pen .851/.893, spoon .817/.822, usb_key .866/.906 (n / s).
+
+COCO zero-shot baseline on test (fork / spoon only): fork AP50 0.715, AP50-95 0.489; spoon AP50 0.899, AP50-95 0.717.
+Fine-tuned YOLO11n vs COCO: fork 0.715 -> 0.992 (AP50), 0.489 -> 0.871 (AP50-95); spoon 0.899 -> 0.916, 0.717 -> 0.817.
+
+### Caveats (read before quoting any number)
+- Test scores are HIGHER than val scores (0.981 vs 0.940 mAP50). This was not expected: s06 is a different surface and background but it is
+  also a *cleaner* scene (no clutter, no nail clipper, no distractors), whereas s05 was built to be cluttered. Sanity checks found no leakage:
+  sessions are disjoint, no shared file names, and test images are farther from train/val images than train images are from each other.
+  Do not present this as "the model generalises better than validation"; present it as "scene difficulty differs".
+- One seed per model, 80 images: the n vs s difference (0.854 vs 0.869 mAP50-95) is within noise here, although it matches the val trend.
+- YOLO11s produces low-confidence (0.27-0.51) false `spoon` boxes in 19/80 test images: mostly a small box stuck in the top-left corner
+  (dark marble vein), and once the phone (a distractor) labelled as spoon. With a confidence threshold of 0.5 most disappear.
+  YOLO11n has far fewer false positives (2, 2, 3, 1, 1 per class at conf 0.25).
+- Error analysis on test was done after the fact and not used to change any model.
