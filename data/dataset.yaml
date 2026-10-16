@@ -1,0 +1,12 @@
+path: dataset
+train: train/images
+val: val/images
+test: test/images
+nc: 6
+names:
+- airpod
+- charger
+- fork
+- pen
+- spoon
+- usb_key
