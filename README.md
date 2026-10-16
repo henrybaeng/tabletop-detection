@@ -144,4 +144,4 @@ weights/      final weights: YOLO11n and YOLO11s (seed 0)
 
 ## License
 
-[Ultralytics YOLO](https://github.com/ultralytics/ultralytics) is released under AGPL-3.0; the trained weights and code that depend on it are subject to that license. The photos are personal and are not distributed.
+The code in this repository is released under the MIT license (see `LICENSE`). [Ultralytics YOLO](https://github.com/ultralytics/ultralytics) is released under AGPL-3.0, and the trained weights and any code that depends on it are subject to that license. The photos are personal and are not distributed.
