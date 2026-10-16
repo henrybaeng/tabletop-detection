@@ -93,7 +93,8 @@ On the test session almost every object is found and correctly labelled (`spoon`
 ## Limitations
 
 - **The test session is not harder than the validation session.** Test scores (0.98 mAP@0.5) are *higher* than validation scores (0.94): s06 is a clean scene, whereas s05 was deliberately cluttered. I checked for leakage (disjoint sessions, no shared files, test images farther from train images than train images are from each other) and found none, but the test number should not be read as "generalises better than validation". It means the two scenes differ in difficulty.
-- **Small, single-environment dataset:** 479 images, one person, one room, one set of six objects, one webcam. No claim is made about other objects, cameras or rooms.
+- **Small, single-environment dataset:** 479 images, one person, one room, one webcam. No claim is made about other cameras or rooms.
+- **Each class is one physical object** (for example one fork with an orange handle). The model recognises these six objects, not the categories in general. Other forks, pens or USB keys were not tested, and I expect worse results on them.
 - **One seed per model on the test set, 80 images:** differences of one or two points are not significant.
 - **Sensitivity to the viewpoint:** at least one validation frame (`s05_071`), captured from a much wider angle than the rest of the data, shows missed or mislabelled objects. I did not measure this systematically.
 - **YOLO11s false positives:** on test it adds low-confidence (0.27-0.51) false `spoon` boxes in 19 of 80 images (mostly a small box on a dark marble vein in the top-left corner; once the phone). YOLO11n has far fewer.
