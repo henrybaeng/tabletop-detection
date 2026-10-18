@@ -1,6 +1,7 @@
 """Real-time tabletop object detection from the webcam (or on a folder of images).
 
 Webcam:  python scripts/demo.py                    (add --camera N if your iPhone is camera 0, see capture.py --list)
+Record:  python scripts/demo.py --save live.mp4 --clean   (saves the annotated live stream; use YOLO11n so the clip plays at normal speed)
 Video:   python scripts/demo.py --video my_clip.mp4 --save demo_out.mp4          (annotated copy of a recorded clip)
 Images:  python scripts/demo.py --images data/dataset/val/images --out screenshots/val_demo
 
@@ -82,7 +83,12 @@ cap = cv2.VideoCapture(args.video if args.video else args.camera)
 if not cap.isOpened():
     raise SystemExit(f"Cannot open {args.video}." if args.video else
                      "Cannot open the camera. Check macOS Settings > Privacy > Camera, or try --camera 1.")
+if not args.video:  # ask the webcam for 720p; the model itself always works at --imgsz
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 src_fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
+if src_fps < 1 or src_fps > 60:
+    src_fps = 30.0
 writer = None
 n_frames = 0
 
@@ -107,6 +113,9 @@ while True:
     n_frames += 1
     if args.no_display:
         continue
+    if n_frames == 1:
+        cv2.namedWindow("Tabletop detection", cv2.WINDOW_NORMAL)
+        cv2.resizeWindow("Tabletop detection", 1280, 720)
     cv2.imshow("Tabletop detection", view)
     key = cv2.waitKey(1) & 0xFF
     if key == ord("q"):
