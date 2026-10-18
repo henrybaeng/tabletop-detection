@@ -106,6 +106,7 @@ On the test session almost every object is found and correctly labelled (`spoon`
 - **One seed per model on the test set, 80 images:** differences of one or two points are not significant.
 - **Sensitivity to the viewpoint:** at least one validation frame (`s05_071`), captured from a much wider angle than the rest of the data, shows missed or mislabelled objects. I did not measure this systematically.
 - **YOLO11s false positives:** on test it adds low-confidence (0.27-0.51) false `spoon` boxes in 19 of 80 images (mostly a small box on a dark marble vein in the top-left corner; once the phone). YOLO11n has far fewer.
+- **The live demo is limited by the webcam, not by the model:** in my room the MacBook camera delivers about 15 frames per second (the status bar shows 15 FPS), while the model alone runs at 50 to 70 FPS on recorded frames. More light may raise the camera rate; I did not get it above 15.
 - **Training time:** the first run on the Mac took 1.5 hours (8 GB of RAM, swapping); the same run takes about two minutes on a Kaggle T4.
 
 ## Run it
