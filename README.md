@@ -61,6 +61,14 @@ Both candidates and the seed (0) were fixed before looking at the test set. One 
 
 Per-class AP@0.5:0.95 of YOLO11n on test: airpod 0.907, charger 0.812, fork 0.871, pen 0.851, spoon 0.817, usb_key 0.866.
 
+### What it looks like on the test session
+
+![test predictions](docs/figures/test_predictions.jpg)
+*YOLO11n at confidence 0.5 on six test images taken at regular intervals (every 13th image), not picked by hand. In the last image the spoon lying under the fork is missed.*
+
+![failure case](docs/figures/failure_case.jpg)
+*A typical failure on the validation session: the nail clipper, which never appears in training, is detected as a fork (0.62).*
+
 ### What mattered (validation session, 3 seeds)
 
 ![experiments](docs/figures/experiments.png)
