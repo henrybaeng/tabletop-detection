@@ -90,6 +90,8 @@ src_fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
 if src_fps < 1 or src_fps > 60:
     src_fps = 30.0
 writer = None
+pending = []
+t_start = time.perf_counter()
 n_frames = 0
 
 fps, last = 0.0, time.perf_counter()
@@ -106,10 +108,20 @@ while True:
     view = draw(frame.copy(), result, None if args.clean else f"{model_name} | {fps:4.1f} FPS | conf>={conf:.2f} | q quit, m model, +/- conf, s save")
     if args.save:
         if writer is None:
-            h, w = view.shape[:2]
-            Path(args.save).parent.mkdir(parents=True, exist_ok=True)
-            writer = cv2.VideoWriter(args.save, cv2.VideoWriter_fourcc(*"mp4v"), src_fps, (w, h))
-        writer.write(view)
+            pending.append(view)
+            if args.video or len(pending) >= 45:
+                # Webcams often drop to 15 FPS in dim light while reporting 30: time the first 45 frames
+                # and write the file at the real rate, otherwise the clip plays at double speed.
+                out_fps = src_fps if args.video else max(5.0, round(len(pending) / (time.perf_counter() - t_start)))
+                print(f"saving at {out_fps:.0f} FPS" + ("" if args.video or out_fps >= 25 else " (low light? the camera is slowing down, add light)"))
+                h, w = view.shape[:2]
+                Path(args.save).parent.mkdir(parents=True, exist_ok=True)
+                writer = cv2.VideoWriter(args.save, cv2.VideoWriter_fourcc(*"mp4v"), out_fps, (w, h))
+                for v in pending:
+                    writer.write(v)
+                pending = []
+        else:
+            writer.write(view)
     n_frames += 1
     if args.no_display:
         continue
@@ -132,6 +144,10 @@ while True:
         cv2.imwrite(str(shots / f"demo_{int(time.time())}.jpg"), view)
 
 cap.release()
+if writer is None and pending:  # very short recording
+    writer = cv2.VideoWriter(args.save, cv2.VideoWriter_fourcc(*"mp4v"), 15, (pending[0].shape[1], pending[0].shape[0]))
+    for v in pending:
+        writer.write(v)
 if writer is not None:
     writer.release()
     print(f"wrote {n_frames} annotated frames to {args.save}")
