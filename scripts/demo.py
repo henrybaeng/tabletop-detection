@@ -26,6 +26,7 @@ parser.add_argument("--camera", type=int, default=0)
 parser.add_argument("--imgsz", type=int, default=640)
 parser.add_argument("--video", help="run on a recorded video file instead of the webcam")
 parser.add_argument("--save", help="write the annotated video to this .mp4 path (webcam or --video)")
+parser.add_argument("--clean", action="store_true", help="no black status bar, only the boxes (for a presentation video)")
 parser.add_argument("--no-display", action="store_true", help="do not open a window (useful with --video --save)")
 parser.add_argument("--images", help="annotate every .jpg of this folder instead of using the webcam")
 parser.add_argument("--out", default="screenshots/demo", help="output folder for --images")
@@ -36,18 +37,23 @@ device = "mps" if torch.backends.mps.is_available() else "cpu"
 
 
 def draw(frame, result, hud):
+    k = min(3.0, max(1.0, frame.shape[1] / 640))  # scale lines and text for HD frames (phone videos)
+    thick, fs = max(2, round(2 * k)), 0.6 * k
     for box, cls, conf in zip(result.boxes.xyxy.cpu().numpy(), result.boxes.cls.int().tolist(), result.boxes.conf.tolist()):
         name = result.names[cls]
         x1, y1, x2, y2 = map(int, box)
         color = COLORS.get(name, (255, 255, 255))
-        cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
+        cv2.rectangle(frame, (x1, y1), (x2, y2), color, thick)
         label = f"{name} {conf:.2f}"
-        (tw, th), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2)
-        ytop = y1 - th - 8 if y1 - th - 8 > 30 else y1 + th + 8  # keep the label below the HUD bar, inside the box if needed
-        cv2.rectangle(frame, (x1, ytop), (x1 + tw + 6, ytop + th + 8), color, -1)
-        cv2.putText(frame, label, (x1 + 3, ytop + th + 3), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
-    cv2.rectangle(frame, (0, 0), (frame.shape[1], 30), (0, 0, 0), -1)
-    cv2.putText(frame, hud, (8, 21), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+        (tw, th), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, fs, thick)
+        bar = round(30 * k) if hud else 0
+        ytop = y1 - th - 8 * k if y1 - th - 8 * k > bar else y1 + th + 8 * k  # keep the label below the HUD bar
+        ytop = int(ytop)
+        cv2.rectangle(frame, (x1, ytop), (x1 + tw + int(6 * k), ytop + th + int(8 * k)), color, -1)
+        cv2.putText(frame, label, (x1 + int(3 * k), ytop + th + int(3 * k)), cv2.FONT_HERSHEY_SIMPLEX, fs, (255, 255, 255), thick)
+    if hud:
+        cv2.rectangle(frame, (0, 0), (frame.shape[1], round(30 * k)), (0, 0, 0), -1)
+        cv2.putText(frame, hud, (int(8 * k), int(21 * k)), cv2.FONT_HERSHEY_SIMPLEX, fs, (255, 255, 255), thick)
     return frame
 
 
@@ -91,7 +97,7 @@ while True:
     now = time.perf_counter()
     fps = 0.9 * fps + 0.1 / max(now - last, 1e-6) if fps else 1 / max(now - last, 1e-6)
     last = now
-    view = draw(frame.copy(), result, f"{model_name} | {fps:4.1f} FPS | conf>={conf:.2f} | q quit, m model, +/- conf, s save")
+    view = draw(frame.copy(), result, None if args.clean else f"{model_name} | {fps:4.1f} FPS | conf>={conf:.2f} | q quit, m model, +/- conf, s save")
     if args.save:
         if writer is None:
             h, w = view.shape[:2]
