@@ -4,6 +4,8 @@ Fine-tuning YOLO11 to detect six everyday tabletop objects (pen, USB key, spoon,
 
 **Result on a held-out session (new surface and background, never used for any decision):** YOLO11n reaches **0.98 mAP@0.5 and 0.85 mAP@0.5:0.95**, and runs at **50-70 FPS** on an Apple M1 GPU (MPS). Compared with the COCO-pretrained model used as-is, the fork AP@0.5:0.95 goes from 0.49 to 0.87.
 
+**Demo video (about one minute):** https://youtu.be/IQn-0A9n2Is
+
 ![sessions](docs/figures/sessions.jpg)
 *One frame from each of the six capture sessions (different lighting, surfaces and backgrounds).*
 
